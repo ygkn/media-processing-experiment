@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>sample1-1</title>
+    <style>
+      #word1 {
+        transition: 1s transform;
+        display: inline-block;
+      }
+
+      #word1.anim {
+        color: tomato;
+        transform: rotate(1turn);
+      }
+
+      #name.anim {
+        color: tomato;
+      }
+    </style>
+  </head>
+  <body>
+    <button style="background-color: #edf7ff" id="click-button">
+      <p style="color: #0000ff">Click here!</p>
+    </button>
+    <p style="font-size: 2em">
+      Have fun with
+      <span id="word1">JavaScript!</span>
+    </p>
+    <div id="name">私の名前は 八木田裕伍 です</div>
+    <script>
+      const word1 = document.querySelector("#word1");
+      const name = document.querySelector("#name");
+
+      document.querySelector("#click-button").addEventListener("click", () => {
+        word1.classList.add("anim");
+        name.classList.add("anim");
+      });
+    </script>
+  </body>
+</html>
