@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="theme-color" content="#ff0000" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>canvasに図形を描く</title>
+    <style>
+      body {
+        margin: 0;
+        background-color: #fff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .title__text {
+        height: 3rem;
+        width: 100%;
+      }
+
+      .fig {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #fff;
+        min-height: 100vh;
+      }
+
+      #canvas {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 4px;
+      }
+
+      .comment {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.5;
+        padding: 1em;
+        overflow-y: hidden;
+        position: relative;
+      }
+
+      .comment__p {
+        text-indent: 1em;
+        margin: 0;
+      }
+
+      .comment__bg {
+        position: fixed;
+        z-index: -1;
+        top: 10vh;
+        left: 50vw;
+        height: 80vh;
+        transform: translateX(-300px) translateX(-75%);
+      }
+
+      .footer {
+        padding: 1em;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="fig">
+      <h1>
+        <svg
+          width="1015"
+          height="242"
+          viewBox="0 0 1015 242"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="title__text"
+        >
+          <title>太陽の塔</title>
+          <path
+            d="M234.152 81.552c4.096 0 6.656-1.28 7.424-4.096-12.544-10.752-33.28-26.368-33.28-26.368l-18.432 23.296H128.68c2.048-20.224 2.304-40.704 2.816-61.44 6.4-1.024 8.704-3.584 9.472-7.424L97.704 1.424c0 24.832.256 49.152-1.792 72.96H1.448l2.048 7.168H95.4C89.512 138.384 69.8 191.12.936 236.688l2.56 3.584c45.568-19.456 74.496-43.008 93.184-69.12 9.472 13.824 17.152 32 18.432 48.896 30.976 26.368 62.976-33.536-15.36-53.76 17.408-26.112 24.832-54.784 28.16-84.736h.512c6.144 52.736 24.32 120.064 85.504 159.232 2.816-17.408 11.776-26.368 27.392-29.184l.256-3.072c-70.4-29.952-99.584-78.848-108.8-126.976h101.376zM443.304 24.72v25.856h-58.112V24.72h58.112zm-58.112 58.624V58h58.112v25.344h-58.112zm0 7.424h58.112v9.728h4.864c13.824 0 23.04-5.12 23.04-6.144v-67.84c5.376-1.024 7.68-2.56 9.472-4.864L455.336 2.704 442.28 17.296h-54.528L358.568 6.032v99.072h4.608c13.568 0 22.016-4.608 22.016-6.656v-7.68zm-91.136 67.072V26.256h22.272c-3.584 19.712-9.728 48.384-14.336 64.512 10.752 16.384 14.08 35.072 14.08 51.712 0 7.68-1.792 12.288-4.608 14.08-1.792 1.024-3.328 1.28-5.888 1.28h-11.52zm165.376-16.64H389.8c5.376-6.4 9.728-13.056 13.568-20.224h89.344c3.584 0 6.144-1.28 6.912-4.096-9.984-9.472-26.88-23.04-26.88-23.04l-14.336 19.712H338.856l2.048 7.424h32.256c-7.424 18.432-18.944 36.096-34.048 50.176 2.304-5.888 3.328-12.8 3.328-20.992 0-19.968-10.496-43.52-34.048-60.16 12.544-15.36 28.16-40.704 36.864-56.064 5.632 0 9.216-.768 11.264-3.072L329.128 4.752 314.28 19.088h-16.896L266.92 7.312V241.04h4.864c13.568 0 22.272-6.912 22.272-8.96v-70.912c4.864 1.28 8.704 3.328 10.24 6.144 2.048 3.328 3.072 14.08 3.072 21.504 9.984-.256 17.664-2.304 23.04-6.4l.512 1.024c20.992-9.216 38.656-20.736 52.48-35.072h8.448c-13.568 26.112-35.84 50.944-62.976 68.608l2.56 3.84c38.144-16.896 69.12-41.216 87.04-72.448h7.68c-12.544 36.864-36.608 67.84-73.984 88.832l2.56 3.84c51.456-19.712 83.712-50.432 100.096-92.672h6.656c-3.328 35.84-9.728 56.576-16.384 61.696-2.304 1.536-4.608 2.048-8.448 2.048-5.12 0-17.408-.768-24.576-1.28l-.256 3.584c8.704 1.792 14.336 4.608 17.408 8.448 3.072 3.84 3.84 10.24 3.84 17.92 11.776.256 21.504-2.304 29.44-7.936 13.312-9.472 21.504-33.536 25.856-80.128 5.376-.768 8.448-2.048 10.496-4.352l-25.344-20.992-14.08 13.824zm164.096-70.912c0 13.568-4.864 31.232-11.52 46.08-8.192 17.664-30.72 52.992-45.056 52.992-10.752 0-19.456-18.944-19.456-39.168 0-20.992 8.192-38.4 23.04-54.784 12.288-13.056 28.416-22.528 45.056-27.136 4.352 5.888 7.936 13.568 7.936 22.016zm-2.56 152.32c86.016-3.584 119.808-45.056 119.808-93.44 0-53.248-41.728-94.208-100.608-94.208-31.232 0-57.088 9.472-77.824 27.392-25.856 21.76-37.632 52.224-37.632 76.032 0 33.28 18.944 64.768 39.424 64.768 31.232 0 59.904-46.592 71.424-79.104 5.888-15.616 8.448-32.512 8.448-45.568 0-12.032-9.216-24.576-16.896-32.512a68.939 68.939 0 0110.24-.768c41.472 0 71.68 30.208 71.68 77.312 0 44.288-24.32 79.872-89.088 95.232l1.024 4.864zM824.744 81.04h29.696c3.328 0 5.888-1.28 6.4-4.096-7.424-9.728-22.016-24.576-22.016-24.576l-12.8 21.248h-1.28V16.784c6.912-1.024 8.96-3.584 9.472-7.168L795.56 6.032v67.584h-27.136l2.048 7.424h25.088v85.76c-13.056 4.352-23.808 7.68-30.208 9.216l14.336 34.304c3.072-1.28 5.632-4.352 6.144-7.68 33.536-22.784 57.6-41.984 72.704-54.528l-1.024-2.816c-11.008 4.096-22.016 7.936-32.768 11.776V81.04zm67.072 131.84v-46.336h62.464v46.336h-62.464zm59.904-53.504H895.4l-32.256-13.568v94.976h5.12c14.848 0 23.552-6.144 23.552-8.192v-12.288h62.464v18.176h4.864c9.984 0 24.32-6.144 24.576-8.192v-58.624c4.864-1.28 8.704-3.584 10.24-5.632l-28.672-21.76-13.568 15.104zm-23.808-32.512h-47.36l2.048 7.424h79.872c3.584 0 6.144-1.28 6.912-4.096-9.984-8.96-26.88-22.016-26.88-22.016l-14.592 18.688zM904.36 53.136V39.568h35.84v21.504l-35.84-7.936zm40.704 13.312c9.984 0 22.528-4.608 22.528-6.656V39.568h37.628c3.59 0 6.15-1.28 6.92-4.096-8.71-9.216-24.068-23.296-24.068-23.296L975.016 32.4h-7.424V9.872c5.12-1.024 6.656-3.072 7.168-5.888L940.2.912V32.4h-35.84V9.616c5.376-.768 6.912-2.816 7.168-5.632L876.968.912V32.4h-34.56l2.048 7.168h32.512v29.44h4.608c5.888 0 12.544-1.792 17.152-3.584-12.032 25.344-38.912 56.576-65.024 74.496l1.536 2.816c38.144-14.848 78.08-43.264 95.744-72.704 11.008 28.416 35.072 51.456 62.72 64.768 1.28-11.776 8.706-23.808 20.476-27.648v-3.584c-27.388-5.376-62.972-16.128-79.868-35.84 2.56-.256 4.608-.768 6.144-1.28h4.608z"
+            fill="#D50101"
+          />
+        </svg>
+      </h1>
+
+      <canvas id="canvas" width="500" height="500">
+        図形を表示できませんでした
+      </canvas>
+    </section>
+
+    <article class="comment">
+      <h2>概要</h2>
+      <p class="comment__p">今回は太陽の塔を作成した。</p>
+      <p class="comment__p">
+        <a
+          href="https://www.expo70-park.jp/other/livecam/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ライブカメラ
+        </a>
+        のように現在の吹田市の時刻や天気によって絵が変化する。
+      </p>
+      <p class="comment__p">
+        太陽の塔がある万博記念公園は私の地元である大阪にあり、子供の頃から親しんできた。
+        現在はコロナ禍により帰省が不可能であることから、身近に感じたいと考え、作品の題材とした。
+      </p>
+      <h2>表示の変化</h2>
+      <h3>時刻による変化</h3>
+      <p class="comment__p">
+        空は、昼の間は晴天の場合には青空が表示されるが、日没をすぎると夕焼けとなった後、次第に暗い色に変化し、星が瞬く。
+      </p>
+      <p class="comment__p">
+        また、「黄金の顔」の目は、日の入りから日の出までの時間に発光する。
+      </p>
+      <p class="comment__p">
+        さらに、全体の明度も日の入りから日の出までの時間は低下する。
+      </p>
+      <h3>天気による変化</h3>
+      <p class="comment__p">晴天時以外は雲が表示される。</p>
+      <p class="comment__p">
+        また、雨天、降雪時はそれぞれ雨や雪が降水量に比例して降る。
+      </p>
+
+      <h2>開発について</h2>
+      <h3>太陽の塔の画像</h3>
+      <p class="comment__p">
+        太陽の塔は、公式サイトの画像をトレースしたものを SVG として書き出し、
+        <code>drawImage</code> 関数を用いて表示している。
+      </p>
+      <h3>天気の情報の出典</h3>
+      <p class="comment__p">
+        天気は
+        <a
+          href="https://openweathermap.org/current"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          OpenWeatherMap の Current Weather Data API
+        </a>
+        から取得した以下の情報を使用している。
+      </p>
+      <ul>
+        <li>日の出 / 日の入りの時刻</li>
+        <li>現在の天気</li>
+        <ul>
+          <li>降水量</li>
+          <li>降雪量</li>
+        </ul>
+      </ul>
+      <p class="comment__p">また、天気の情報は 3 分毎に更新される。</p>
+      <h3>デバッグ</h3>
+      <p class="comment__p">
+        プログラムの検証に役立つように以下のような関数を用意した。
+        コンソールから <code>__DEBUG__.debug()</code> のように実行できる。
+      </p>
+      <dl>
+        <dt><code>__DEBUG__.debug()</code></dt>
+        <dd>デバッグを開始する。天気や現在時刻は更新されなくなる。</dd>
+        <dt><code>__DEBUG__.cloudy()</code></dt>
+        <dd>状態を曇天時にする。</dd>
+        <dt><code>__DEBUG__.rain(volume = 2)</code></dt>
+        <dd>
+          状態を雨天時にする。引数
+          <code>volume</code> は降水量で、デフォルト値は <code>2</code> である。
+        </dd>
+        <dt><code>__DEBUG__.snow(volume = 2)</code></dt>
+        <dd>
+          状態を降雪時にする。引数
+          <code>volume</code> は降水量で、デフォルト値は <code>2</code> である。
+        </dd>
+        <dt><code>__DEBUG__.sunny()</code></dt>
+        <dd>状態を晴天時にする。</dd>
+        <dt><code>__DEBUG__.fastForward(rate = 60)</code></dt>
+        <dd>
+          時刻を早送りにする。引数 <code>rate</code> は倍率で、デフォルト値は
+          <code>60</code> である。
+        </dd>
+        <dt><code>__DEBUG__.stopTimer()</code></dt>
+        <dd><code>__DEBUG__.fastForward</code> 関数の早送りを停止する。</dd>
+      </dl>
+
+      <svg
+        width="142"
+        height="565"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="comment__bg"
+      >
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M70.871 0C66.066 25.448 107.26 34.69 142 41.7c-28.632 15.4-81.032 20.57-94.671 35.939-8.733 32.214 15.434 49.842 57.468 59.373-36.626 27.641-61.217 45.164-79.019 77.702 2.324 12.637 20.592 24.499 28.735 37.911C27.4 269.752.396 293.5 3.43 317.168c3.604 28.125 1.626 23.28 38.72 30.545 37.096 7.266 69.065 26.15 79.804 49.028 10.739 22.877-65.225 40.814-81.964 70.857C21.068 501.56 16.421 536.475 6.356 565c4.419-50.698 16.206-118.717 24.667-128.907 8.46-10.19 19.632-26.252 18.94-36.324-.797-11.605-23.34-37.509-31.496-43.933-6.368-5.015-13.637-9.792-17.04-15.923-3.51-6.321.582-5.155.406-22.902-.175-17.747 4.475-43.827 33.258-65.169-3.103-6.757-16.75-22.532-15.004-35.568 1.746-13.035 18.63-48.532 40.28-73.309-23.606-18.797-17.866-41.22-14.368-64.23C54.542 64.09 65.401 52.24 77.918 44.677 60.318 36.05 67.01 16.188 70.871 0z"
+          fill="rgb(255 0 0 / .5)"
+        />
+      </svg>
+    </article>
+
+    <footer class="footer">© 2021 Yugo Yagita</footer>
+
+    <script>
+      const WEATHER_API_KEY = "738ee7eb27387a36f5db9c3f9f717898";
+      const WEATHER_CITY_ID = 1851483; // Suita, Osaka
+
+      const WEATHER_API_ENDPONT = `https://api.openweathermap.org/data/2.5/weather?id=${WEATHER_CITY_ID}&appid=${WEATHER_API_KEY}`;
+
+      const TOWER_OF_THE_SUN_SVG = `
+       <svg width="512" height="512" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <g clip-path="url(#clip0)">
+           <path d="M260.521 132.098c21.731 0 39.348-17.616 39.348-39.347 0-21.73-17.617-39.347-39.348-39.347-21.73 0-39.347 17.616-39.347 39.347s17.617 39.347 39.347 39.347z" fill="#FAEB00"/>
+           <path d="M244.23 100.918a6.913 6.913 0 100-13.827 6.913 6.913 0 000 13.827zM277.064 100.918a6.913 6.913 0 100-13.827 6.913 6.913 0 000 13.827z" fill="#0085E5"/>
+           <path clip-rule="evenodd" d="M260.897 54.09c-12.26 24.377-12.546 55.116-.783 75.506 12.773-20.793 12.654-52.68.783-75.506z" stroke="#696200" stroke-linejoin="bevel"/>
+           <path d="M252.289 105.283l8.308-6.215 7.975 6.215M252.843 108.792l7.864.688 7.533-.688" stroke="#696200"/>
+           <path d="M260.521 132.099c-11.326 0-21.59-4.564-28.843-12.669 3.136 66.106-19.319 129.956-24.917 195.01-82.734-18.431-124.893-20.74-156.872-34.405-1.466-.553-2.533.208-1.44 1.666 34.93 48.223 91.197 72.972 153.122 95.594l-10.956 134.937 141.28-.577c-5.613-44.8-6.972-87.137-12.11-135.513 63.733-24.254 118.314-52.075 143.986-92.654 1.158-1.913-.899-4.004-2.607-3.239-26.346 13.532-82.655 17.176-148.568 33.929-6.869-71.472-31.118-133.018-24.639-193.121a39.551 39.551 0 01-27.436 11.042z" fill="#FCFCFC"/>
+           <path d="M244.23 97.514a2.757 2.757 0 100-5.515 2.757 2.757 0 000 5.515zM277.064 97.514a2.757 2.757 0 100-5.514 2.757 2.757 0 000 5.514z" fill="#fff"/>
+           <path fill-rule="evenodd" clip-rule="evenodd" d="M295.047 240.369c5.239-7.163 3.115-14.481.75-24.786 1.129 14.396-2.855 15.11-15.856 16.823 15.106 7.963 22.734 28.517 27.124 42.087-4.777 6.164-5.96 12.139-24.975 11.085 10.098 8.256 21.238 12.61 29.103 34.513 1.181 7.662-3.351 17.179-6.7 26.258 3.16 6.243 9.33 11.432 10.06 23.424-10.865 13.985-18.738 22.779-20.599 33.649-2.021 11.802 8.221 20.622 12.074 28.783 4.729 10.018 9.802 33.262 18.284 55.808-7.216-21.267-8.224-59.736-10.594-65.095-2.37-5.36-27.228-27.546 7.202-34.688-.53-14.36-4.614-27.169-10.736-43.1 7.5-27.581-2.236-39.725-6.495-47.544-2.402-4.409 3.241-9.577 5.545-10.836l-2.189-12.237c-2.743-9.897-5.815-23.146-11.998-34.144zM222.164 218.918c-1.415 12.724 10.713 17.345 20.94 20.849-8.429 7.7-23.855 10.285-27.87 17.969-2.571 16.107 4.543 24.921 16.918 29.686-10.783 13.82-18.022 22.581-23.263 38.849.684 6.319 6.062 12.249 8.459 18.955-7.981 8.564-15.931 20.437-15.038 32.27 1.061 14.062.479 11.64 11.399 15.272 10.921 3.633 20.332 13.075 23.494 24.513 3.161 11.439-19.202 20.407-24.13 35.428-5.57 16.98-6.939 34.437-9.902 48.699 1.301-25.348 4.771-59.356 7.262-64.451 2.491-5.095 5.78-13.126 5.576-18.162-.235-5.802-6.871-18.753-9.272-21.966-1.875-2.507-4.015-4.895-5.017-7.96-1.033-3.161.172-2.578.12-11.451-.052-8.873 1.317-21.913 9.791-32.583-.914-3.379-4.932-11.266-4.417-17.783.514-6.518 5.484-24.266 11.858-36.654-6.95-9.398-5.26-20.609-4.23-32.113 2.515-7.323 5.712-13.248 9.397-17.029-5.182-4.314-3.212-14.244-2.075-22.338z" fill="red"/>
+           <path fill-rule="evenodd" clip-rule="evenodd" d="M265.082 338.373c3.074-1.067 6.994-.336 6.994-.336 4.196.477 5.232-2.77 5.145-5.603-.095-3.059-2.076-5.869-4.592-5.783-11.732.403-.207-28.255-2.466-50.104-7.54.808-18.623 6.497-25.524 9.803-6.901 3.307-27.759 8.2-27.426 40.32.334 32.12 18.469 49.525 51.736 44.774 7.864-5.896-1.893-8.439-2.815-10.85 0 0 6.289-4.183 5.649-7.865-4.055-3.983-10.196-2.014-14.178-1.218 5.393-2.868 15.88.07 16.283-6.868.403-6.938-13.078-3.328-13.078-3.328.155-.822 2.956-2.485 4.272-2.942z" fill="#F7F7F7"/>
+           <path d="M260.427 327.29c-11.455.731-12.081 10.263-9.869 13.472 1.965 2.849 5.508 4.55 10.21.563m4.314-2.952c3.074-1.067 6.994-.336 6.994-.336 4.196.477 5.232-2.77 5.145-5.603-.095-3.059-2.076-5.869-4.592-5.783-11.732.403-.207-28.255-2.466-50.104-7.54.808-18.623 6.497-25.524 9.803-6.901 3.307-27.759 8.2-27.426 40.32.334 32.12 18.469 49.525 51.736 44.774 7.864-5.896-1.893-8.439-2.815-10.85 0 0 6.289-4.183 5.649-7.865-4.055-3.983-10.196-2.014-14.178-1.218 5.393-2.868 15.88.07 16.283-6.868.403-6.938-13.078-3.328-13.078-3.328.155-.822 2.956-2.485 4.272-2.942z" stroke="#000"/>
+           <path clip-rule="evenodd" d="M257.608 324.627c-7.862.772-9.693 4.561-13.594 6.748-11.37 6.376-22.525-.342-21.34-9.725 1.483-11.729 17.787-10.259 23.452-2.433 3.589 4.958 6.437 5.796 11.482 5.41z" stroke="#000"/>
+           <path fill-rule="evenodd" clip-rule="evenodd" d="M305.725 328.73c-.03-18.626-5.344-32.379-35.224-43.421-1.044 23.405-7.594 41.038 2.186 41.41 2.516-.086 4.497 2.724 4.592 5.782.087 2.833-.949 6.08-5.145 5.604 0 0-3.92-.732-6.995.336h.001c-1.316.457-4.117 2.119-4.273 2.941 0 0 13.482-3.61 13.079 3.328-.403 6.939-10.89 4-16.283 6.868 3.982-.796 10.123-2.765 14.178 1.219.64 3.681-5.649 7.864-5.649 7.864.922 2.412 10.522 4.975 2.658 10.871 29.191-.152 36.664-21.973 36.875-42.802v0z" fill="#F6F6F6" stroke="#000"/>
+           <path clip-rule="evenodd" d="M269.227 320.516s.81 4.357 4.458 3.485c11.107-18.797 27.632-7.929 27.877-2.194.231 5.396-2.066 10.366-12.274 12.184-4.451.793-11.665-3.165-15.499-9.872-3.542.69-4.562-3.603-4.562-3.603v0z" stroke="#000"/>
+           <path fill-rule="evenodd" clip-rule="evenodd" d="M261.837 107.469V48.568l3.776-.613.092-2.455-.072-3.832-2.046 3.136-2.092.005-.299-8.822c8.357-.882 9.488-8.123 9.434-13.126-1.028 4.359-2.74 8.869-6.497 8.747 3.402-3.456 4.596-7.169 3.969-12.259-.442 4.733-3.766 11.114-6.365 11.4-.708-6.083-1.105-12.166-1.528-18.249.057 6.443-.01 12.886-.831 19.33-4.119-3.56-7.48-7.496-7.92-14.345-.687 8.213 2.829 11.113 5.206 14.815-2.548.414-4.259-3.264-5.815-5.566 1.644 5.746 3.135 8.297 8.856 9.292l-.131 8.797-1.91.04-1.815-2.3-.221 5.299 3.674.935.292 58.711 2.243-.039z" fill="gray"/>
+         </g>
+         <defs>
+           <clipPath id="clip0">
+             <path fill="#fff" d="M0 0h512v512H0z"/>
+           </clipPath>
+         </defs>
+       </svg>`;
+
+      const TOWER_OF_THE_SUN_IMG = new Image();
+
+      TOWER_OF_THE_SUN_IMG.src = `data:image/svg+xml,${encodeURIComponent(
+        TOWER_OF_THE_SUN_SVG
+      )}`;
+
+      const tick = () =>
+        new Promise((resolve) => requestAnimationFrame(resolve));
+
+      const canvas = document.querySelector("#canvas");
+      const ctx = canvas.getContext("2d");
+
+      const WIDTH = canvas.width;
+      const HEIGHT = canvas.height;
+
+      let startTimestamp = null;
+      let timestamp = null;
+
+      let sunrise = null;
+      let sunset = null;
+      let hasClouds = null;
+      let raindrops = null;
+      let snowdrops = null;
+      let now = null;
+
+      const __DEBUG__ = {
+        isDebug: false,
+        timer: null,
+        assertDebug() {
+          if (!this.isDebug) {
+            throw new Error("call `__DEBUG__.debug()`");
+          }
+        },
+        cloudy() {
+          this.assertDebug();
+          hasClouds = true;
+        },
+        rain(volume = 2) {
+          this.assertDebug();
+          this.cloudy();
+          raindrops = Array(Math.floor(volume * 50))
+            .fill()
+            .map(() => ({
+              x: Math.random() * WIDTH,
+              y: Math.random() * HEIGHT,
+              size: 0.2 + Math.random() * 0.8,
+            }));
+        },
+        snow(volume = 2) {
+          this.assertDebug();
+          this.cloudy();
+          snowdrops = Array(Math.floor(volume * 50))
+            .fill()
+            .map(() => ({
+              x: Math.random() * WIDTH,
+              y: Math.random() * HEIGHT,
+              size: 0.2 + Math.random() * 0.8,
+              initialSin: Math.random() - 0.5,
+            }));
+        },
+        sunny() {
+          this.assertDebug();
+          hasClouds = false;
+          raindrops = [];
+          snowdrops = [];
+        },
+        fastForward(rate = 60) {
+          this.assertDebug();
+          this.stopTimer();
+
+          console.log("fast forwarding...");
+          this.timer = setInterval(() => {
+            now += rate * 1000;
+            console.log(`now is ${new Date(now).toLocaleString()}`);
+          }, 1000);
+        },
+        stopTimer() {
+          if (this.timer != null) {
+            clearInterval(this.timer);
+          }
+        },
+        debug() {
+          this.isDebug = true;
+        },
+      };
+
+      const starChart = Array(128)
+        .fill()
+        .map(() => ({
+          x: Math.floor(Math.random() * WIDTH),
+          y: Math.floor(Math.random() * (HEIGHT / 2)),
+          size: Math.random() * 1.5,
+          delay: Math.random(),
+          duration: (1 + Math.random()) * 1000,
+          sparkle: Math.random() > 0.75,
+        }));
+
+      const renderSparkle = (x, y, size) => {
+        ctx.beginPath();
+        ctx.moveTo(x + size, y);
+        ctx.bezierCurveTo(x, y, x, y, x, y - size);
+        ctx.bezierCurveTo(x, y, x, y, x - size, y);
+        ctx.bezierCurveTo(x, y, x, y, x, y + size);
+        ctx.bezierCurveTo(x, y, x, y, x + size, y);
+        ctx.closePath();
+        ctx.fill();
+      };
+
+      const updateWeatherData = async () => {
+        if (__DEBUG__.isDebug) {
+          return;
+        }
+
+        const weatherData = await (await fetch(WEATHER_API_ENDPONT)).json();
+
+        sunrise = weatherData.sys.sunrise * 1000;
+        sunset = weatherData.sys.sunset * 1000;
+
+        const rainVolume = weatherData.rain?.["1h"] ?? 0;
+
+        raindrops = Array(Math.floor(rainVolume * 50))
+          .fill()
+          .map(() => ({
+            x: Math.random() * WIDTH,
+            y: Math.random() * HEIGHT,
+            size: 0.2 + Math.random() * 0.8,
+          }));
+
+        const snowVolume = weatherData.snow?.["1h"] ?? 0;
+
+        snowdrops = Array(Math.floor(snowVolume * 50))
+          .fill()
+          .map(() => ({
+            x: Math.random() * WIDTH,
+            y: Math.random() * HEIGHT,
+            size: 0.2 + Math.random() * 0.8,
+            initialSin: Math.random() - 0.5,
+          }));
+
+        hasClouds = weatherData.weather.id !== 800;
+      };
+
+      const updateNow = () => {
+        if (__DEBUG__.isDebug) {
+          return;
+        }
+
+        now = Date.now();
+      };
+
+      // called before animation start
+      const start = async () => {
+        await updateWeatherData();
+
+        setInterval(updateWeatherData, 3 * 60 * 1000);
+
+        updateNow();
+
+        setInterval(updateNow, 30 * 1000);
+      };
+
+      // called each frames
+      const update = async () => {
+        const isSunRise = sunrise < now && now < sunset;
+
+        const sunsetThreshold = 2 * 60 * 60 * 1000; // 2h
+        const sunsetRate = Math.max(
+          Math.min(
+            Math.min(now - sunrise, sunset - now) / sunsetThreshold / 2,
+            0.5
+          ),
+          -0.5
+        );
+
+        ctx.filter = `contrast(${hasClouds ? 0.8 : 1})`;
+
+        // background
+        {
+          // night sky
+          {
+            ctx.fillStyle = "rgb(16 23 84)";
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+            // stars
+            {
+              ctx.fillStyle = "#fff";
+
+              for (const star of starChart) {
+                const scaleRate =
+                  Math.abs(
+                    ((timestamp / star.duration + star.delay) % 1) - 0.5
+                  ) + 0.5;
+
+                if (star.sparkle) {
+                  renderSparkle(star.x, star.y, (6 + star.size) * scaleRate);
+                } else {
+                  ctx.beginPath();
+                  ctx.arc(
+                    star.x,
+                    star.y,
+                    star.size * scaleRate,
+                    0,
+                    Math.PI * 2
+                  );
+                  ctx.fill();
+                }
+              }
+            }
+          }
+
+          // day sky
+          {
+            const opacity = Math.max((sunsetRate + 0.5) * 2 * 100, 0);
+
+            ctx.fillStyle = `rgb(101 158 254 / ${opacity}%)`;
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+          }
+
+          // sunset/sunrise sky
+          {
+            const yOffset = Math.abs(
+              Math.min(0, sunsetRate * 4 * HEIGHT) + HEIGHT
+            );
+
+            const gradient = ctx.createLinearGradient(
+              0,
+              yOffset,
+              0,
+              HEIGHT + yOffset
+            );
+
+            gradient.addColorStop(0, "rgb(255 88 0 / 0)");
+            gradient.addColorStop(1, "rgb(255 88 0 / 1)");
+
+            ctx.fillStyle = gradient;
+
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+          }
+
+          // haze
+          {
+            const gradient = ctx.createLinearGradient(0, HEIGHT / 2, 0, HEIGHT);
+
+            gradient.addColorStop(0, "rgb(255 255 255 / 0%)");
+            gradient.addColorStop(1, "rgb(255 255 255 / 20%)");
+
+            ctx.fillStyle = gradient;
+
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+          }
+        }
+
+        // clouds
+        if (hasClouds) {
+          ctx.save();
+
+          const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT / 2);
+
+          gradient.addColorStop(0, "rgb(192 192 192 / 80%)");
+          gradient.addColorStop(0.7, "rgb(192 192 192 / 60%)");
+          gradient.addColorStop(1, "rgb(192 192 192 / 0%)");
+
+          ctx.fillStyle = gradient;
+
+          ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+          ctx.restore();
+        }
+
+        // darken
+        {
+          ctx.save();
+
+          ctx.filter += `
+           brightness(
+             ${Math.max(0.6, Math.min((sunsetRate + 0.5) * 2, 1))}
+           )`;
+
+          // tower of the sun
+          {
+            ctx.drawImage(
+              TOWER_OF_THE_SUN_IMG,
+              WIDTH / 8,
+              HEIGHT / 16,
+              (WIDTH / 4) * 3,
+              (HEIGHT / 4) * 3
+            );
+          }
+
+          // ground
+          {
+            const groundHeight = HEIGHT / 5;
+
+            ctx.fillStyle = "#66AA22";
+            ctx.fillRect(0, HEIGHT - groundHeight, WIDTH, groundHeight);
+          }
+
+          ctx.restore();
+        }
+
+        // sparkle eyes
+        if (!isSunRise) {
+          const scaleRate = Math.abs(((timestamp / 2000) % 1) - 0.5) + 0.5;
+
+          ctx.fillStyle = "#fff";
+
+          renderSparkle(
+            WIDTH / 2 - (WIDTH / 512) * 9,
+            (HEIGHT / 512) * 102,
+            16 * scaleRate
+          );
+
+          renderSparkle(
+            WIDTH / 2 + (WIDTH / 512) * 16,
+            (HEIGHT / 512) * 102,
+            16 * scaleRate
+          );
+        }
+
+        // raindrops
+        {
+          ctx.fillStyle = "#2DF";
+
+          for (const yOffset of [0, -HEIGHT]) {
+            for (const raindrop of raindrops) {
+              {
+                ctx.fillRect(
+                  raindrop.x,
+                  raindrop.y +
+                    (((timestamp / 2000) * HEIGHT * raindrop.size) % HEIGHT) +
+                    yOffset,
+                  raindrop.size,
+                  8 * raindrop.size
+                );
+              }
+            }
+          }
+        }
+
+        // snowdrops
+        {
+          ctx.fillStyle = "#fff";
+
+          for (const yOffset of [0, -HEIGHT]) {
+            for (const snowdrop of snowdrops) {
+              {
+                ctx.beginPath();
+                ctx.arc(
+                  snowdrop.x +
+                    Math.sin(((timestamp / 1000) % 1) * 2 * Math.PI) +
+                    snowdrop.initialSin * 64,
+                  snowdrop.y +
+                    (((timestamp / 4000) * HEIGHT) % HEIGHT) +
+                    yOffset,
+                  2 * snowdrop.size,
+                  0,
+                  2 * Math.PI
+                );
+                ctx.fill();
+              }
+            }
+          }
+        }
+      };
+
+      (async () => {
+        await start();
+        startTimestamp = performance.now();
+
+        while (true) {
+          timestamp = await tick();
+          await update();
+        }
+      })();
+    </script>
+  </body>
+</html>
