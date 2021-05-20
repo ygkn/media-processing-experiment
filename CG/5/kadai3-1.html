@@ -1,0 +1,97 @@
+<!-- ライトとマテリアル -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sample</title>
+    <style>
+      p {
+        text-indent: 1.25em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>第5回メディア処理実験</h1>
+    <canvas id="canvas1" style="width: 960px; height: 600px"></canvas>
+    <section class="discussion">
+      <h2>考察</h2>
+      <p>
+        ランバートモデルでは, 光源として \(R\), \(G\), \(B\)
+        それぞれの光の強さを \(I^{(R)}\), \(I^{(G)}\), \(I^{(B)}\),
+        光源光の方向（ベクトル）を \(\bm{L}\), 面の法線ベクトルを \(\bm{n}\)
+        としたときに \(R\), \(G\), \(B\) それぞれの拡散反射光の強さ
+        \(J_{\mathrm{d}}^{(\mathrm{R})}\), \(J_{\mathrm{d}}^{(\mathrm{G})}\),
+        \(J_{\mathrm{d}}^{(\mathrm{B})}\) は,
+
+        <!-- prettier-ignore -->
+        \[ J_{\mathrm{d}}^{(\mathrm{R})} = k_{\mathrm{d}}^{(\mathrm{R})} \left(
+        I^{(R)} \mathbf{n} \cdot \mathbf{L}^{\prime} \right) +
+        k_{\mathrm{d}}^{(\mathrm{R})} I_{\mathrm{a}}^{(\mathrm{R})} \]
+
+        <!-- prettier-ignore -->
+        \[ J_{\mathrm{d}}^{(\mathrm{G})} = k_{\mathrm{d}}^{(\mathrm{G})} \left(
+        I^{(G)} \mathbf{n} \cdot \mathbf{L}^{\prime} \right) +
+        k_{\mathrm{d}}^{(\mathrm{G})} I_{\mathrm{a}}^{(\mathrm{G})} \]
+
+        <!-- prettier-ignore -->
+        \[ J_{\mathrm{d}}^{(\mathrm{B})} = k_{\mathrm{d}}^{(\mathrm{B})} \left(
+        I^{(B)} \mathbf{n} \cdot \mathbf{L}^{\prime} \right) +
+        k_{\mathrm{d}}^{(\mathrm{B})} I_{\mathrm{a}}^{(\mathrm{B})} \]
+
+        である.
+      </p>
+      <p>
+        ここで, 平行光源の色を赤色(<code>0xFF0000</code>) とした場合,
+
+        <!-- prettier-ignore -->
+        \[
+          \begin{align*}
+            I^{(R)} &= 255 \\
+            I^{(G)} &= 0 \\
+            I^{(B)} &= 0
+          \end{align*}
+        \]
+
+        となり,
+        拡散反射光の色を青色(<code>0x0000FF</code>)に設定していることから,
+
+        \[
+          \begin{align*}
+            k_{\mathrm{d}}^{(\mathrm{R})} &= 0 \\
+            k_{\mathrm{d}}^{(\mathrm{G})} &= 0 \\
+            k_{\mathrm{d}}^{(\mathrm{B})} &= 255
+          \end{align*}
+        \]
+
+        である.
+      </p>
+      <p>
+        よって,
+
+        <!-- prettier-ignore -->
+        \[
+          \begin{align*}
+            J_{\mathrm{d}}^{(\mathrm{R})} & =
+              0 \left(
+              255 \mathbf{n} \cdot \mathbf{L}^{\prime} \right) +
+              0 I_{\mathrm{a}}^{(\mathrm{R})} \\
+            J_{\mathrm{d}}^{(\mathrm{G})} & =
+              0 \left(
+              0 \mathbf{n} \cdot \mathbf{L}^{\prime} \right) +
+              0 I_{\mathrm{a}}^{(\mathrm{G})} \\
+            J_{\mathrm{d}}^{(\mathrm{B})} & =
+              255 \left(
+              0 \mathbf{n} \cdot \mathbf{L}^{\prime} \right) +
+              255 I_{\mathrm{a}}^{(\mathrm{B})} \\
+          \end{align*}
+        \]
+
+        となり, 青色成分の環境光のみが反射されるため,
+        環境光のみの結果と同じ絵になる．
+      </p>
+    </section>
+
+    <script type="module" src="./src/kadai3-1.ts"></script>
+  </body>
+</html>
