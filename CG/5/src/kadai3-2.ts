@@ -2,7 +2,6 @@ import {
   AmbientLight,
   DirectionalLight,
   Mesh,
-  MeshLambertMaterial,
   MeshPhongMaterial,
   PerspectiveCamera,
   Scene,
