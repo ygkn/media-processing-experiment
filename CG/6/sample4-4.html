@@ -1,0 +1,156 @@
+<!-- キーボードイベント -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sample</title>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", exec); // body が読み込み終わるまで待つ
+
+      var width = 960;
+      var height = 600;
+      var side = 10;
+      var border = 100;
+      var scene;
+      var camera;
+      var mesh;
+      var renderer;
+      var light;
+      var isMouseclick = false; // マウスがクリックされたとき
+      var shiftx = 0,
+        shiftz = 0;
+      function exec() {
+        // Mouseイベントの追加
+        document.addEventListener("click", function (e) {
+          if (isMouseclick == false) isMouseclick = true;
+          else isMouseclick = false;
+        });
+        // キーボタンを押したとき
+        document.addEventListener("keydown", function (e) {
+          switch (e.key) {
+            case "w":
+              shiftz = -0.5;
+              break;
+            case "a":
+              shiftx = -0.5;
+              break;
+            case "s":
+              shiftz = 0.5;
+              break;
+            case "d":
+              shiftx = 0.5;
+              break;
+          }
+        });
+
+        // キーを放したとき
+        document.addEventListener("keyup", function (e) {
+          switch (e.key) {
+            case "w":
+              shiftz = 0;
+              break;
+            case "a":
+              shiftx = 0;
+              break;
+            case "s":
+              shiftz = 0;
+              break;
+            case "d":
+              shiftx = 0;
+              break;
+          }
+        });
+
+        // シーンを作る
+        scene = new THREE.Scene();
+        // ライトの設定
+        light = new THREE.DirectionalLight(0xffffff, 1.0);
+        //light = new THREE.PointLight(0xFFFFFF, 2, 100, 1.0);
+        light.position.set(-1, 1, 1); // ライトの向きを変更
+        scene.add(light);
+        var amb_light = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(amb_light);
+
+        // 立方体を20こ作る
+        var geometry = new THREE.BoxGeometry(side, 10, 10);
+        var material = new THREE.MeshPhongMaterial({ color: 0xff8888 });
+        for (var i = 0; i < 20; i++) {
+          var cube = new THREE.Mesh(geometry, material);
+          cube.position.x = (Math.random() - 0.5) * border;
+          cube.position.y = (Math.random() - 0.5) * border;
+          cube.position.z = (Math.random() - 0.5) * border;
+          cube.rotation.x = Math.random() * 2 * Math.PI;
+          cube.rotation.y = Math.random() * 2 * Math.PI;
+          cube.rotation.z = Math.random() * 2 * Math.PI;
+          // シーンにオブジェクトを追加
+          scene.add(cube);
+        }
+        // 床面
+        var geometry1 = new THREE.BoxGeometry(border, 0.1, border);
+        var material1 = new THREE.MeshPhongMaterial({ color: 0x777777 });
+        var mesh1 = new THREE.Mesh(geometry1, material1);
+        mesh1.position.set(0, -border / 2, 0);
+        // シーンにオブジェクトを追加
+        scene.add(mesh1);
+
+        //<-- ここに立方体，青色のMeshを作成
+        var geometry2 = new THREE.BoxGeometry(20, 20, 20);
+        var material2 = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+        mesh = new THREE.Mesh(geometry2, material2);
+        mesh.position.set(0, -border / 2 + 10, 0);
+        scene.add(mesh);
+        // カメラを設定
+        camera = new THREE.PerspectiveCamera(90, width / height, 1, 1000);
+        camera.position.set(0, 0, 110);
+        camera.lookAt(scene.position);
+
+        //レンダラを作成
+        renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById("canvas1"),
+        });
+        renderer.setSize(width, height);
+
+        // カメラコントローラーを作成
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        update();
+      }
+
+      function update() {
+        if (isMouseclick == true) {
+          // マウスのクリックによって回転が始まる
+          mesh.rotation.x += 0.01;
+          mesh.rotation.y += 0.01;
+        }
+
+        mesh.position.x += shiftx;
+
+        mesh.position.x = THREE.MathUtils.clamp(
+          mesh.position.x,
+          -((border - 20) / 2),
+          (border - 20) / 2
+        );
+
+        mesh.position.z += shiftz;
+
+        mesh.position.z = THREE.MathUtils.clamp(
+          mesh.position.z,
+          -((border - 20) / 2),
+          (border - 20) / 2
+        );
+
+        renderer.render(scene, camera); // レンダラーに描画することを命令する
+        requestAnimationFrame(update);
+      }
+    </script>
+  </head>
+
+  <body>
+    <h1>第6回メディア処理実験</h1>
+
+    <canvas id="canvas1" style="width: 960; height: 600"></canvas>
+  </body>
+</html>

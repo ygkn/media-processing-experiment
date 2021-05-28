@@ -1,0 +1,211 @@
+<!-- オブジェクトのグループ化 -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sample</title>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <style>
+      p {
+        text-indent: 1.25em;
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", exec); // body が読み込み終わるまで待つ
+
+      var width = 960;
+      var height = 600;
+      var side = 10;
+      var border = 100;
+      var scene;
+      var camera;
+      var mesh;
+      var renderer;
+      var light;
+      var isMouseclick = false;
+      var shifty = 0;
+      var snowman;
+
+      const snowdropSet = new Set();
+      const snowdropInitialPhase = new Map();
+      const snowdropGeometry = new THREE.SphereGeometry(0.5, 10, 10);
+      const snowdropMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+      });
+
+      let isSnowstorm = false;
+
+      function exec() {
+        // Mouseイベント
+        document.addEventListener("click", function (e) {
+          if (isMouseclick == false) isMouseclick = true;
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === " ") {
+            isSnowstorm = !isSnowstorm;
+          }
+        });
+
+        // シーンを作る
+        scene = new THREE.Scene();
+        // ライトの設定
+        light = new THREE.DirectionalLight(0xffffff, 1.0);
+        //light = new THREE.PointLight(0xFFFFFF, 2, 100, 1.0);
+        light.position.set(-1, 1, 1); // ライトの向きを変更
+        scene.add(light);
+        var amb_light = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(amb_light);
+
+        // 雪だるまを作る関数を呼ぶ
+        createSnowman();
+        snowman.position.y = -border / 2;
+
+        // 床面
+        var geometry1 = new THREE.BoxGeometry(border, 0.1, border);
+        var material1 = new THREE.MeshPhongMaterial({ color: 0x77cc77 });
+        var mesh1 = new THREE.Mesh(geometry1, material1);
+        mesh1.position.set(0, -border / 2, 0);
+        // シーンにオブジェクトを追加
+        scene.add(mesh1);
+
+        for (let index = 0; index < 150; index++) {
+          const mesh = new THREE.Mesh(snowdropGeometry, snowdropMaterial);
+          const initialX = THREE.MathUtils.randFloatSpread(border);
+          const initialZ = THREE.MathUtils.randFloatSpread(border);
+
+          mesh.position.set(
+            initialX,
+            THREE.MathUtils.randFloatSpread(border) + border / 3,
+            initialZ
+          );
+
+          scene.add(mesh);
+          snowdropSet.add({
+            mesh,
+            initialPhase: THREE.MathUtils.randFloat(0, 2 * Math.PI),
+          });
+        }
+
+        // カメラを設定
+        camera = new THREE.PerspectiveCamera(90, width / height, 1, 1000);
+        camera.position.set(0, 0, 110);
+        camera.lookAt(scene.position);
+
+        //レンダラを作成
+        renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById("canvas1"),
+        });
+        renderer.setSize(width, height);
+
+        // カメラコントローラーを作成
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        update();
+      }
+
+      function update(timestamp = 0) {
+        if (isMouseclick == true) {
+          // マウスのクリックによって雪だるまがジャンプ
+          shifty += (2 * Math.PI) / 60;
+          snowman.position.y += 3 * Math.pow(Math.sin(shifty), 3);
+          if (shifty > 2 * Math.PI) {
+            shifty = 0;
+            isMouseclick = false;
+          }
+        }
+
+        if (THREE.MathUtils.randFloat(0, 4) < 1) {
+          const mesh = new THREE.Mesh(snowdropGeometry, snowdropMaterial);
+          const initialX = THREE.MathUtils.randFloatSpread(border);
+          const initialZ = THREE.MathUtils.randFloatSpread(border);
+
+          mesh.position.set(initialX, border, initialZ);
+
+          scene.add(mesh);
+          snowdropSet.add({
+            mesh,
+            initialPhase: THREE.MathUtils.randFloat(0, 2 * Math.PI),
+          });
+        }
+
+        for (const snowdrop of snowdropSet) {
+          if (snowdrop.mesh.position.y > -border / 2) {
+            snowdrop.mesh.position.set(
+              snowdrop.mesh.position.x +
+                Math.sin(
+                  ((timestamp / 1000) * Math.PI) / 4 + snowdrop.initialPhase
+                ) *
+                  0.05 +
+                (isSnowstorm ? 1 : 0),
+              snowdrop.mesh.position.y - 0.1,
+              snowdrop.mesh.position.z +
+                Math.cos(
+                  ((timestamp / 1000) * Math.PI) / 4 + snowdrop.initialPhase
+                ) *
+                  0.05
+            );
+            if (isSnowstorm && snowdrop.mesh.position.x > border / 2) {
+              snowdrop.mesh.position.x = -border / 2;
+            }
+          } else {
+            snowdropSet.delete(snowdrop);
+          }
+        }
+
+        renderer.render(scene, camera); // レンダラーに描画することを命令する
+        requestAnimationFrame(update);
+      }
+
+      // 雪だるまを作る関数
+      function createSnowman() {
+        // パーツをグループに登録するためのグループ（入れ物）を定義
+        snowman = new THREE.Group();
+
+        var sphere1 = new THREE.SphereGeometry(10, 10, 10);
+        var sphere2 = new THREE.SphereGeometry(8, 10, 10);
+        var material = new THREE.MeshPhongMaterial({ color: 0xffffff });
+
+        var body = new THREE.Mesh(sphere1, material);
+        var head = new THREE.Mesh(sphere2, material);
+        body.position.y += 10;
+        head.position.y += 26;
+        var cylinder = new THREE.CylinderGeometry(1, 5, 8, 10);
+        var material2 = new THREE.MeshPhongMaterial({ color: 0xff3333 });
+        var hat = new THREE.Mesh(cylinder, material2);
+        hat.rotation.z = -Math.PI / 6;
+        hat.position.y += 34;
+        hat.position.x += 4;
+
+        snowman.add(body);
+        snowman.add(head);
+        snowman.add(hat);
+        scene.add(snowman);
+      }
+    </script>
+  </head>
+
+  <body>
+    <h1>第6回メディア処理実験</h1>
+
+    <canvas id="canvas1" style="width: 960; height: 600"></canvas>
+
+    <section>
+      <h2>説明</h2>
+      <p>
+        この課題では、<code>SphereGeometry</code> を用いて降る雪を追加した。
+      </p>
+      <p>
+        現実感を加えるため、雪は三角関数を用いて揺れているように表現した。
+        なお、上（y軸の正の方向）から見ると、この動きは円を描いているように見える。
+      </p>
+      <p>
+        また、キーボードイベントを追加し、 <kbd>Space</kbd> キーを押下すると、 x
+        軸の正の方向に雪が激しく移動し、吹雪いたように変化する。
+      </p>
+      <p>この変化は、 <kbd>Space</kbd> キーを再度押下すると元に戻る。</p>
+    </section>
+  </body>
+</html>

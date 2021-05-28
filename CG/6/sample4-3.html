@@ -1,0 +1,133 @@
+<!-- マウスイベント -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sample</title>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", exec); // body が読み込み終わるまで待つ
+
+      const width = 960;
+      const height = 600;
+      const side = 10;
+      const border = 100;
+
+      let scene;
+      let camera;
+      let mesh;
+      let renderer;
+      let light;
+      let isMouseclick = false; // マウスがクリックされたとき
+      let isMousemove = false;
+      let shiftx = 0,
+        shifty = 0;
+      let mouseX0 = 0,
+        mouseY0 = 0;
+      function exec() {
+        // Mouseイベントの追加
+        document.addEventListener("click", function (e) {
+          if (isMouseclick == false) isMouseclick = true;
+          else isMouseclick = false;
+        });
+        // マウスボタンを押したとき
+        document.addEventListener("mousedown", function (e) {
+          isMousemove = true;
+          mouseX0 = e.clientX;
+          mouseY0 = e.clientY;
+        });
+        // マウスを移動させている
+        document.addEventListener("mousemove", function (e) {
+          if (isMousemove) {
+            shiftx = (e.clientX - mouseX0) / 100;
+            shifty = -(e.clientY - mouseY0) / 100;
+          }
+        });
+        // マウスボタンを放したとき
+        document.addEventListener("mouseup", function (e) {
+          if (isMousemove == true) {
+            shiftx = 0;
+            shifty = 0;
+          }
+          isMousemove = false;
+        });
+
+        // シーンを作る
+        scene = new THREE.Scene();
+        // ライトの設定
+        light = new THREE.DirectionalLight(0xffffff, 1.0);
+        //light = new THREE.PointLight(0xFFFFFF, 2, 100, 1.0);
+        light.position.set(-1, 1, 1); // ライトの向きを変更
+        scene.add(light);
+        const amb_light = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(amb_light);
+
+        // 立方体を20こ作る
+        const geometry = new THREE.BoxGeometry(side, 10, 10);
+        const material = new THREE.MeshPhongMaterial({ color: 0xff8888 });
+        for (let i = 0; i < 20; i++) {
+          const cube = new THREE.Mesh(geometry, material);
+          cube.position.x = (Math.random() - 0.5) * border;
+          cube.position.y = (Math.random() - 0.5) * border;
+          cube.position.z = (Math.random() - 0.5) * border;
+          cube.rotation.x = Math.random() * 2 * Math.PI;
+          cube.rotation.y = Math.random() * 2 * Math.PI;
+          cube.rotation.z = Math.random() * 2 * Math.PI;
+          // シーンにオブジェクトを追加
+          scene.add(cube);
+        }
+        // 床面
+        const geometry1 = new THREE.BoxGeometry(border, 0.1, border);
+        const material1 = new THREE.MeshPhongMaterial({ color: 0x777777 });
+        const mesh1 = new THREE.Mesh(geometry1, material1);
+        mesh1.position.set(0, -border / 2, 0);
+        // シーンにオブジェクトを追加
+        scene.add(mesh1);
+
+        //<-- ここに立方体，青色のMeshを作成
+        const geometry2 = new THREE.BoxGeometry(20, 20, 20);
+        const material2 = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+        mesh = new THREE.Mesh(geometry2, material2);
+        scene.add(mesh);
+        // カメラを設定
+        camera = new THREE.PerspectiveCamera(90, width / height, 1, 1000);
+        camera.position.set(0, 0, 110);
+        camera.lookAt(scene.position);
+
+        //レンダラを作成
+        renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById("canvas1"),
+        });
+        renderer.setSize(width, height);
+
+        // カメラコントローラーを作成
+        //const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        update();
+      }
+
+      function update() {
+        if (isMouseclick) {
+          // マウスのクリックによって回転が始まる
+          mesh.rotation.x += 0.01;
+          mesh.rotation.y += 0.01;
+        }
+        if (isMousemove) {
+          mesh.rotation.x = shiftx;
+          mesh.rotation.y = shifty;
+        }
+
+        renderer.render(scene, camera); // レンダラーに描画することを命令する
+        requestAnimationFrame(update);
+      }
+    </script>
+  </head>
+
+  <body>
+    <h1>第6回メディア処理実験</h1>
+
+    <canvas id="canvas1" style="width: 960; height: 600"></canvas>
+  </body>
+</html>
