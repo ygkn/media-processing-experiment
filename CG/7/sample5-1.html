@@ -1,0 +1,178 @@
+<!-- 少し上級編：クラスをつくる -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sample</title>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", exec);
+
+      const width = 960;
+      const height = 600;
+      const side = 10;
+      const border = 100;
+      let scene;
+      let camera;
+      let renderer;
+      let light;
+      let shiftx = 0,
+        shiftz = 0;
+      let myPoints = [];
+      let numPoints = 10;
+      let score = 0;
+      let hit = 0;
+      let hitMax = 10;
+      function exec() {
+        document.addEventListener("keydown", function (e) {
+          switch (e.key) {
+          }
+        });
+
+        scene = new THREE.Scene();
+
+        light = new THREE.DirectionalLight(0xffffff, 1.0);
+        light.position.set(-1, 1, 1);
+
+        scene.add(light);
+
+        const amb_light = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(amb_light);
+
+        // 床面
+        const geometry1 = new THREE.BoxGeometry(border, 0.1, 2 * border);
+        const material1 = new THREE.MeshPhongMaterial({ color: 0x77cc77 });
+        const floor = new THREE.Mesh(geometry1, material1);
+        floor.position.set(0, -border / 2, 0);
+        // シーンにオブジェクトを追加
+        scene.add(floor);
+
+        // カメラを設定
+        camera = new THREE.PerspectiveCamera(90, width / height, 1, 1000);
+        camera.position.set(0, 0, 110);
+        camera.lookAt(scene.position);
+
+        //レンダラを作成
+        renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById("canvas1"),
+        });
+        renderer.setSize(width, height);
+
+        // カメラコントローラーを作成
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        update();
+      }
+
+      function update() {
+        for (const i = 0; i < numPoints; i++) {
+          myPoints[i].update();
+        }
+
+        //球の操作
+        mySphere.position.x += shiftx;
+        mySphere.position.z += shiftz;
+
+        detector();
+
+        renderer.render(scene, camera); // レンダラーに描画することを命令する
+        requestAnimationFrame(update);
+      }
+
+      // 動く点のクラスを作る
+      class movePoint extends THREE.Object3D {
+        constructor() {
+          // オブジェクトを作成した時に自動的に呼ばれる関数
+          super();
+          // this. をつけてこのクラス内でのみ有効な変数を定義
+          this.speed = THREE.MathUtils.randFloat(1, 5);
+          const geometry = new THREE.Geometry();
+          geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+
+          const material = new THREE.PointsMaterial({
+            size: 10,
+            color: 0x888888,
+          });
+          this.points = new THREE.Points(geometry, material);
+          this.reset();
+
+          this.add(this.points);
+        }
+
+        reset() {
+          this.points.position.y = 50;
+          this.points.position.x = THREE.MathUtils.randFloatSpread(border);
+          this.points.position.z = THREE.MathUtils.randFloatSpread(border);
+          this.speed = THREE.MathUtils.randFloat(1, 5);
+        }
+
+        // アニメーションのために呼び出すメソッド
+        update() {
+          this.points.position.y -= this.speed;
+          if (this.points.position.y < -50) {
+            score++;
+            this.reset();
+          }
+        }
+      }
+
+      function detector() {
+        // Body 内のid が指定してあるところにHTMLタグごと挿入して表示
+        document.getElementById("spx").innerHTML = mySphere.position.x;
+        document.getElementById("spz").innerHTML = mySphere.position.z;
+        document.getElementById("pt0x").innerHTML =
+          myPoints[0].points.position.x.toFixed(1); // 小数点以下1桁だけ表示
+        document.getElementById("pt0z").innerHTML =
+          myPoints[0].points.position.z.toFixed(1);
+        document.getElementById("ss").innerHTML =
+          '<font color="red">' + score + "</font>"; // 文字を赤色に指定するためHTMLタグごと挿入
+        document.getElementById("ht").innerHTML =
+          '<font color="red">' + hit + "</font>"; // 文字を赤色に指定するためHTMLタグごと挿入
+
+        for (const i = 0; i < numPoints; i++) {
+          if (myPoints[i].points.position.y < -40) {
+            const dx = mySphere.position.x - myPoints[i].points.position.x;
+            const dz = mySphere.position.z - myPoints[i].points.position.z;
+            const dist = Math.sqrt(dx * dx + dz * dz);
+            if (dist < side) {
+              hit += 1;
+              myPoints[i].reset();
+              if (hit >= hitMax) {
+                const mess = hitMax + "回あたりました." + "リセットします";
+                score = 0;
+                hit = 0;
+                window.alert(mess); //警告ダイアログを表示
+              }
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <h1>第4回メディア処理実験</h1>
+
+    <canvas id="canvas1" style="width: 960; height: 600"></canvas>
+    <table border="1">
+      <tr>
+        <td>Sphere x</td>
+        <td>Sphere z</td>
+        <td>point0 x</td>
+        <td>point0 z</td>
+        <td>Score</td>
+        <td>Hit</td>
+      </tr>
+      <tr>
+        <td id="spx"></td>
+        <td id="spz"></td>
+        <td id="pt0x"></td>
+        <td id="pt0z"></td>
+        <td id="ss"></td>
+        <td id="ht"></td>
+      </tr>
+    </table>
+  </body>
+</html>

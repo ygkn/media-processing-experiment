@@ -1,0 +1,177 @@
+<!-- アニメーション -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sample</title>
+    <script src="js/three.js"></script>
+    <script src="js/OrbitControls.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", exec); // body が読み込み終わるまで待つ
+
+      const width = 960;
+      const height = 600;
+      const side = 10;
+      const border = 100;
+      let scene;
+      let camera;
+      let renderer;
+      let light;
+      let often;
+
+      const conami = [
+        "ArrowUp",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowRight",
+        "b",
+        "a",
+      ];
+      let pushedKeys = [];
+      let jumpTimesamp = null;
+
+      let confirmed = false;
+
+      function exec() {
+        document.addEventListener("keydown", (e) => {
+          pushedKeys.push(e.key);
+
+          if (pushedKeys.length < conami.length) {
+            return;
+          }
+
+          pushedKeys = pushedKeys.slice(-conami.length);
+          const isPushedConami = pushedKeys.every(
+            (key, index) => key === conami[index]
+          );
+
+          if (!isPushedConami) {
+            return;
+          }
+
+          jumpTimesamp = performance.now();
+        });
+
+        scene = new THREE.Scene();
+        light = new THREE.DirectionalLight(0xffffff, 1.0);
+        light.position.set(-1, 1, 1);
+        scene.add(light);
+        const amb_light = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(amb_light);
+
+        // // 床面に見立てたy方向に薄い(幅 0.1) のBoxGeometry
+        const geometry1 = new THREE.BoxGeometry(border, 0.1, border);
+        const material1 = new THREE.MeshPhongMaterial({ color: 0x777777 });
+        const mesh1 = new THREE.Mesh(geometry1, material1);
+        mesh1.position.set(0, -border / 2, 0);
+        // シーンにオブジェクトを追加
+        scene.add(mesh1);
+
+        // グループを作る
+        often = new THREE.Group();
+
+        {
+          const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(border / 3, 2, border / 2),
+            new THREE.MeshLambertMaterial({ color: 0xdddddd })
+          );
+
+          often.add(mesh);
+        }
+
+        {
+          const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(border / 3 - 5, 2, border / 2 - 5 - 10),
+            new THREE.MeshLambertMaterial({ color: 0xdddddd })
+          );
+
+          mesh.position.y = 2;
+          mesh.position.z = -5;
+
+          often.add(mesh);
+        }
+
+        {
+          const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(border / 3 - 10, 2, border / 2 - 10 - 10),
+            new THREE.MeshLambertMaterial({ color: 0xffaaaa })
+          );
+
+          mesh.position.y = 2.5;
+          mesh.position.z = -5;
+
+          often.add(mesh);
+        }
+
+        {
+          const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(border / 8, 3, border / 15),
+            new THREE.MeshLambertMaterial({ color: 0xdddddd })
+          );
+
+          mesh.position.y = 3;
+          mesh.position.z = border / 5;
+
+          often.add(mesh);
+        }
+
+        often.position.y = -border / 2 + 2;
+
+        // 3D空間にグループを追加する
+        scene.add(often);
+
+        // カメラを設定
+        camera = new THREE.PerspectiveCamera(90, width / height, 1, 1000);
+        camera.position.set(0, 0, 110);
+        //camera.lookAt(scene.position);
+
+        //レンダラを作成
+        renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById("canvas1"),
+        });
+        renderer.setSize(width, height);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        update();
+      }
+
+      function update(timestamp = 0) {
+        often.rotation.y = (timestamp / 1000) * Math.PI;
+
+        if (jumpTimesamp === null) {
+          often.position.y = -border / 2 + 2;
+        } else {
+          often.position.y =
+            -border / 2 + 2 + ((timestamp - jumpTimesamp) / 1000) * 100;
+        }
+
+        if (
+          jumpTimesamp !== null &&
+          (timestamp - jumpTimesamp) / 1000 > 2 &&
+          !confirmed
+        ) {
+          confirmed = true;
+
+          if (confirm("ふとんがふっとんだ！")) {
+            location.assign("https://rits-dajare.github.io/");
+          }
+        }
+
+        renderer.render(scene, camera); // レンダラーに描画することを命令する
+        requestAnimationFrame(update);
+      }
+    </script>
+  </head>
+
+  <body>
+    <h1>ふとんがふっとんだ！</h1>
+
+    <canvas id="canvas1" style="width: 960; height: 600"></canvas>
+  </body>
+</html>
