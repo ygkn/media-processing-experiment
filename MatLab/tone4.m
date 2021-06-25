@@ -11,7 +11,7 @@ Input = double(Input);
 for i=1:Width
     for j=1:Height
 
-        Output(i, j) = 255 * ((Input(i, j)/255) .^ 2);
+        Output(i, j) = 255 * (1/ (1 + exp( 0.1 * (127 - Input(i, j)))));
 
     end;
 end;
@@ -28,5 +28,5 @@ Output = uint8(Output);
 
 
 %%%%%% 画像の保存 （保存ファイル名は'　'の中で記述）%%%%%
-imwrite(Output, 'tone5.bmp');
+imwrite(Output, 'tone4.bmp');
 

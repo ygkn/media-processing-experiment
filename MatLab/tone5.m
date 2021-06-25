@@ -11,7 +11,7 @@ Input = double(Input);
 for i=1:Width
     for j=1:Height
 
-        Output(i, j) = 255 * (1/ (1 + exp( (127 - Input(i, j)))));
+        Output(i, j) = 255 * power((Input(i, j)/255), 2);
 
     end;
 end;
