@@ -2,7 +2,7 @@
 
 %% Load image
 
-W = imread('historical_book_binary.jpg'); W1 = W; 
+W = imread('puzzle.jpg'); W1 = W; 
 W = (W-min(W(:)))/(max(W(:))-min(W(:)));    % set min to 0, max to 1
 
 %% close all figures;
